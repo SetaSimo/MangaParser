@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MangaParser", "MangaParser\MangaParser.csproj", "{098F7E0D-FCD7-4D03-8B95-813268F2F9A0}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MangaParser.Common", "MangaParser.Common\MangaParser.Common.csproj", "{90AF9C06-6BAB-45E2-A0E9-8FDC2EA6F768}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MangaParser.Application", "MangaParser.Application\MangaParser.Application.csproj", "{A9F0407D-A399-48E5-AC0F-132CF7E61476}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{098F7E0D-FCD7-4D03-8B95-813268F2F9A0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{098F7E0D-FCD7-4D03-8B95-813268F2F9A0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{098F7E0D-FCD7-4D03-8B95-813268F2F9A0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{098F7E0D-FCD7-4D03-8B95-813268F2F9A0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{90AF9C06-6BAB-45E2-A0E9-8FDC2EA6F768}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{90AF9C06-6BAB-45E2-A0E9-8FDC2EA6F768}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{90AF9C06-6BAB-45E2-A0E9-8FDC2EA6F768}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{90AF9C06-6BAB-45E2-A0E9-8FDC2EA6F768}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9F0407D-A399-48E5-AC0F-132CF7E61476}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9F0407D-A399-48E5-AC0F-132CF7E61476}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9F0407D-A399-48E5-AC0F-132CF7E61476}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9F0407D-A399-48E5-AC0F-132CF7E61476}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {A85A23F4-0BB0-4363-BE2D-1825C63215E1}
+	EndGlobalSection
+EndGlobal
