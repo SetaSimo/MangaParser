@@ -1,12 +1,13 @@
-﻿using iTextSharp.text;
-using iTextSharp.text.pdf;
-using MangaParser.Common.Dto;
+﻿using MangaParser.Common.Dto;
 using MangaParser.Common.Enums;
 using MangaParser.Common.Exceptions;
+using PdfSharp.Drawing;
+using PdfSharp.Pdf;
+using System.Text;
 
 namespace MangaParser.Application.Services
 {
-	public class DataConverter : BaseFileService
+	public class ToFileConverter : BaseFileService
 	{
 		public static void ConvertToSelectedFormat(string documentPath, string fileName, DocumentFormat documentFormat, IEnumerable<ParsingResultDetails> parsingResultDetails)
 		{
@@ -22,17 +23,20 @@ namespace MangaParser.Application.Services
 
 		private static void ToPdfConverter(string documentPath, IEnumerable<ParsingResultDetails> parsingResultDetails)
 		{
-			var document = new Document();
+			Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+
+			var document = new PdfDocument(documentPath);
 			try
 			{
-				PdfWriter.GetInstance(document, new FileStream(documentPath, FileMode.Create));
-
-				document.Open();
 
 				foreach (var parsingResult in parsingResultDetails)
 				{
+					var page = document.AddPage();
 					if (parsingResult.IsParsedCorrectly)
-						document.Add(Image.GetInstance(parsingResult.Url));
+					{
+						var gfx = XGraphics.FromPdfPage(page);
+						gfx.DrawImage(XImage.FromFile(parsingResult.Url), 0, 0);
+					}
 					else
 						Console.WriteLine(parsingResult.Description);
 				}
