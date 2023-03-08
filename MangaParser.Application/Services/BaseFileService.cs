@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace MangaParser.Application.Services
 {
-	public class BaseFileService
+	public abstract class BaseFileService
 	{
 		protected static string GetFilePath(string path, string fileName, string extention)
 		{
@@ -29,11 +29,16 @@ namespace MangaParser.Application.Services
 		//TODO improve method
 		protected static string GetFileExtention(string url) => Path.GetExtension(url);
 
-		protected static void DeleteTempFiles(string basePath, IEnumerable<KeyValuePair<string , string>> imagesIdsAndExtentions)
+		protected static void DeleteTempFiles(string basePath, IEnumerable<KeyValuePair<string, string>> imagesIdsAndExtentions)
 		{
 			foreach (var imageIdAndExtention in imagesIdsAndExtentions)
 				File.Delete(GetPathPathWithoutFolderValidation(basePath, imageIdAndExtention.Key, imageIdAndExtention.Value));
 		}
 
+		public static void DeleteTempFiles(IEnumerable<string> filesPaths)
+		{
+			foreach (var path in filesPaths)
+				File.Delete(path);
+		}
 	}
 }

@@ -7,31 +7,32 @@ namespace MangaParser.Application.Services
 {
 	public class WebPageParser : BaseFileService
 	{
-		private static readonly string _endOfRegex = "[^>]*)(\")";
+		private const string EndOfRegex = "[^>]*)(\")";
 
-		private static readonly int _imageGroup = 1;
+		private const int ImageGroup = 1;
+		private const int TasksPerChunk = 10;
 
-		public static async Task<IEnumerable<ParsingResultDetails>> GetPageContent(string path, string baseUrl, string beginingOfLink, int startPage, int endPage, CancellationToken cancellationToken)
+		public static async Task<IEnumerable<ParsingResultDetails>> GetPageContentAsync(string path, string baseUrl, string beginingOfLink, int startPage, int endPage, CancellationToken cancellationToken)
 		{
 			if (startPage > endPage)
 				throw new ValidationExceptionInvalidPageValue(new Exception());
 
 			var totalPages = endPage - startPage;
 
-			await CheckForInstalledDependencies();
+			await CheckForInstalledDependenciesAsync();
 
 			var imageUrlsTasks = new List<Task<ParsingResultDetails>>();
 
 			for (int i = startPage; i < totalPages; i++)
-				imageUrlsTasks.Add(GetPageImage(baseUrl, beginingOfLink, i));
+				imageUrlsTasks.Add(GetPageImageAsync(baseUrl, beginingOfLink, i));
 
-			var parsingResult = await Task.WhenAll(imageUrlsTasks);
+			var parsingResult = await ExecuteTasksAsync(imageUrlsTasks);
 
 			try
 			{
-				var pathToImagesTasks = parsingResult.Select(r => DownloadImage(r, path, cancellationToken));
+				var pathToImagesTasks = parsingResult.Select(r => DownloadImageAsync(r, path, cancellationToken));
 
-				return await Task.WhenAll(pathToImagesTasks);
+				return await ExecuteTasksAsync(pathToImagesTasks);
 			}
 			catch (Exception ex)
 			{
@@ -40,31 +41,47 @@ namespace MangaParser.Application.Services
 			}
 		}
 
-		private static async Task<ParsingResultDetails> GetPageImage(string baseUrl, string beginingOfLink, int pageNumber)
+		/// <summary>
+		/// Executes chunk tasks to avoid throttling
+		/// </summary>
+		private static async Task<IEnumerable<T>> ExecuteTasksAsync<T>(IEnumerable<Task<T>> tasksToExecute)
+		{
+			return tasksToExecute
+				.Chunk(TasksPerChunk)
+				.Select(async c =>
+				{
+					var result = await Task.WhenAll(c);
+					return result.Select(r => r);
+				})
+				.SelectMany(a => a.Result)
+				.ToList();
+		}
+
+		private static async Task<ParsingResultDetails> GetPageImageAsync(string baseUrl, string beginingOfLink, int pageNumber)
 		{
 			using (var browser = await Puppeteer.LaunchAsync(new LaunchOptions { Headless = true }))
 			{
 				using (var page = await browser.NewPageAsync())
 				{
 					await page.GoToAsync($"{baseUrl}{pageNumber}");
-					//TODO delete const
+					//TODO delete const and change to WaitForSelectorAsync
 					await page.WaitForTimeoutAsync(200);
 
-					var regexPattern = $"({beginingOfLink}{_endOfRegex}";
-					var imageUrl = Regex.Match(await page.GetContentAsync(), regexPattern).Groups[_imageGroup].Value;
+					var regexPattern = $"({beginingOfLink}{EndOfRegex}";
+					var imageUrl = Regex.Match(await page.GetContentAsync(), regexPattern).Groups[ImageGroup].Value;
 					return new ParsingResultDetails(imageUrl, pageNumber);
 				}
 			}
 		}
 
-		private static async Task<BrowserFetcher> CheckForInstalledDependencies()
+		private static async Task<BrowserFetcher> CheckForInstalledDependenciesAsync()
 		{
 			var browserFetcher = new BrowserFetcher();
 			await browserFetcher.DownloadAsync();
 			return browserFetcher;
 		}
 
-		private static async Task<ParsingResultDetails> DownloadImage(ParsingResultDetails parsingResultDetails, string path, CancellationToken cancellationToken)
+		private static async Task<ParsingResultDetails> DownloadImageAsync(ParsingResultDetails parsingResultDetails, string path, CancellationToken cancellationToken)
 		{
 			if (!parsingResultDetails.IsParsedCorrectly)
 				return parsingResultDetails;

@@ -24,3 +24,5 @@ composer.phar
 */bin
 */obj
 .vs/MangaParser/v17/.suo
+*.png
+*.Pdf
